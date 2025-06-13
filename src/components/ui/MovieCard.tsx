@@ -4,10 +4,12 @@ import type { IMovie } from "../../types/movie";
 
 interface MovieCardProps {
   movie: IMovie;
+  onMovieClick: (movieId: number) => void;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({
   movie: {
+    id,
     title,
     poster_path,
     vote_average,
@@ -15,13 +17,21 @@ const MovieCard: React.FC<MovieCardProps> = ({
     release_date,
     adult,
   },
+  onMovieClick,
 }) => {
   const posterUrl = poster_path
     ? `${API_CONFIG.TMDB.IMAGE_BASE_URL}${poster_path}`
     : "/no-poster.jpg";
 
+  const handleClick = () => {
+    onMovieClick(id);
+  };
+
   return (
-    <div className="group bg-gray-800/50 rounded-lg overflow-hidden shadow-lg hover:shadow-purple-500/40 hover:-translate-y-2 transition-all duration-300 cursor-pointer">
+    <div
+      className="group bg-gray-800/50 rounded-lg overflow-hidden shadow-lg hover:shadow-purple-500/40 hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+      onClick={handleClick}
+    >
       <img
         src={posterUrl}
         alt={title}
