@@ -3,6 +3,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useCallback, useRef } from "react";
 import { tmdbApi } from "../services/tmdb";
 import { appwriteApi } from "../services/appwrite";
 import { DEFAULT_QUERY_OPTIONS } from "../lib/api-config";
@@ -11,6 +12,7 @@ import type { IMovie } from "../types/movie";
 
 export const useMovies = (searchQuery: string) => {
   const queryClient = useQueryClient();
+  const updateTrendingRef = useRef<Set<string>>(new Set());
 
   const moviesQuery = useInfiniteQuery({
     queryKey: [QUERY_KEYS.MOVIES, searchQuery],
@@ -22,6 +24,7 @@ export const useMovies = (searchQuery: string) => {
         : undefined;
     },
     initialPageParam: 1,
+    enabled: true,
     ...DEFAULT_QUERY_OPTIONS,
   });
 
@@ -38,13 +41,31 @@ export const useMovies = (searchQuery: string) => {
         queryKey: [QUERY_KEYS.APPWRITE_TRENDING],
       });
     },
+    onError: (error) => {
+      console.error("Failed to update trending:", error);
+    },
   });
 
-  const updateTrending = (searchTerm: string, movie: IMovie) => {
-    if (searchTerm.trim() && movie) {
-      updateTrendingMutation.mutate({ searchTerm, movie });
-    }
-  };
+  const updateTrending = useCallback(
+    (searchTerm: string, movie: IMovie) => {
+      const searchKey = `${searchTerm.trim()}-${movie.id}`;
+
+      if (
+        searchTerm.trim() &&
+        movie &&
+        !updateTrendingRef.current.has(searchKey) &&
+        !updateTrendingMutation.isPending
+      ) {
+        updateTrendingRef.current.add(searchKey);
+        updateTrendingMutation.mutate({ searchTerm: searchTerm.trim(), movie });
+
+        setTimeout(() => {
+          updateTrendingRef.current.delete(searchKey);
+        }, 60000); // 1 minute
+      }
+    },
+    [updateTrendingMutation]
+  );
 
   return {
     ...moviesQuery,

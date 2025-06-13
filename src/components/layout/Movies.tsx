@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useCallback, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useCallback,
+  useState,
+  useMemo,
+} from "react";
 import loader from "../../assets/loading.svg";
 import MovieCard from "../ui/MovieCard";
 import MovieModal from "../ui/MovieModal";
@@ -14,6 +20,8 @@ interface MoviesProps {
 const Movies: React.FC<MoviesProps> = ({ searchQuery }) => {
   const observerRef = useRef<HTMLDivElement>(null);
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+  const prevSearchQueryRef = useRef<string>("");
+  const trendingUpdatedRef = useRef<Set<string>>(new Set());
 
   const debouncedSearchQuery = useDebounce(searchQuery, DEBOUNCE_DELAY);
 
@@ -27,16 +35,39 @@ const Movies: React.FC<MoviesProps> = ({ searchQuery }) => {
     updateTrending,
   } = useMovies(debouncedSearchQuery);
 
+  const firstMovie = useMemo(() => {
+    return data?.pages?.[0]?.results?.[0] || null;
+  }, [data?.pages]);
+
   useEffect(() => {
+    const trimmedQuery = debouncedSearchQuery.trim();
+    const searchKey = `${trimmedQuery}-${firstMovie?.id}`;
+
     if (
-      debouncedSearchQuery.trim() &&
-      data?.pages?.[0]?.results &&
-      data.pages[0].results.length > 0
+      trimmedQuery &&
+      firstMovie &&
+      prevSearchQueryRef.current !== trimmedQuery &&
+      !trendingUpdatedRef.current.has(searchKey)
     ) {
-      const firstMovie = data.pages[0].results[0];
-      updateTrending(debouncedSearchQuery, firstMovie);
+      trendingUpdatedRef.current.add(searchKey);
+      updateTrending(trimmedQuery, firstMovie);
+      prevSearchQueryRef.current = trimmedQuery;
+
+      setTimeout(() => {
+        trendingUpdatedRef.current.delete(searchKey);
+      }, 300000); // 5 minutes
     }
-  }, [debouncedSearchQuery, data, updateTrending]);
+  }, [debouncedSearchQuery, firstMovie, updateTrending]);
+
+  useEffect(() => {
+    if (debouncedSearchQuery.trim() !== prevSearchQueryRef.current) {
+      const currentQuery = debouncedSearchQuery.trim();
+      if (currentQuery === "") {
+        trendingUpdatedRef.current.clear();
+        prevSearchQueryRef.current = "";
+      }
+    }
+  }, [debouncedSearchQuery]);
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -64,15 +95,17 @@ const Movies: React.FC<MoviesProps> = ({ searchQuery }) => {
     };
   }, [handleObserver]);
 
-  const handleMovieClick = (movieId: number) => {
+  const handleMovieClick = useCallback((movieId: number) => {
     setSelectedMovieId(movieId);
-  };
+  }, []);
 
-  const handleModalClose = () => {
+  const handleModalClose = useCallback(() => {
     setSelectedMovieId(null);
-  };
+  }, []);
 
-  const allMovies = data?.pages.flatMap((page) => page.results) || [];
+  const allMovies = useMemo(() => {
+    return data?.pages.flatMap((page) => page.results) || [];
+  }, [data?.pages]);
 
   const getSectionTitle = () => {
     if (debouncedSearchQuery.trim()) {
