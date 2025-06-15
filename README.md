@@ -1,54 +1,77 @@
-# React + TypeScript + Vite
+# <img src="src/assets/logo.gif" alt="logo" width="300"/>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**PrimeTime 🎬** is a modern movie discovery web app built with React, TypeScript, and Vite. Instantly search, browse, and explore thousands of movies, view trending searches, and get detailed information on every title. Powered by [TMDB](https://www.themoviedb.org/) and [Appwrite](https://appwrite.io/) for trending analytics.
 
-Currently, two official plugins are available:
+## Video Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[![PrimeTime Video Demo](https://i9.ytimg.com/vi_webp/_5rsu3xib8s/mq3.webp?sqp=COyiusIG-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYACsgWKAgwIABABGEQgWyhyMA8=&rs=AOn4CLBEHra6MbO25E1lpRScwuhBoq988g)](https://youtu.be/_5rsu3xib8s)
 
-## Expanding the ESLint configuration
+> 📺 **Click the image above to watch a quick demo of PrimeTime in action!**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+<br />
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Features
+
+- 🔍 **Instant Movie Search:** Find movies by title with real-time results.
+- 📈 **Trending Now:** See what movies are trending based on user searches.
+- 🏆 **Popular Movies:** Browse the most popular movies right now.
+- 🎬 **Movie Details:** View rich details, ratings, genres, cast, and more.
+- 🖼️ **Beautiful UI:** Responsive, dark-themed interface with smooth animations.
+- ⚡ **Infinite Scrolling:** Seamlessly load more movies as you scroll.
+- ☁️ **Appwrite Integration:** Trending analytics stored and fetched from Appwrite.
+
+<br />
+
+## Getting Started
+
+### 1. Clone the repository
+
+```sh
+git clone https://github.com/harsh-solanki21/primetime.git
+cd primetime
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Install dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```typescript
+pnpm install
 ```
+
+### 3. Configure environment variables
+
+Copy `.env.local.example` to `.env.local` and fill in your TMDB and Appwrite credentials.
+
+### 4. Run the development server
+
+```typescript
+pnpm dev
+```
+
+### Open http://localhost:5173 to view the app.
+
+<br />
+
+## Project Structure
+
+```
+src/
+  components/      # UI and layout components
+  hooks/           # Custom React hooks (search, trending, details)
+  lib/             # API config and constants
+  services/        # TMDB and Appwrite API logic
+  types/           # TypeScript types
+  assets/          # Images and icons
+  App.tsx          # Main app entry
+```
+
+<br />
+
+## Tech Stack
+
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vite.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [TMDB API](https://www.themoviedb.org/)
+- [Appwrite](https://appwrite.io/)
+- [Tanstack Query](https://tanstack.com/query/latest)
