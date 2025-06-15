@@ -1,5 +1,5 @@
 import { API_CONFIG, AUTH_HEADERS } from "../lib/api-config";
-import type { IMovie, MoviesResponse, MovieSearchParams } from "../types/movie";
+import type { IMovie, MoviesResponse } from "../types/movie";
 
 const API_OPTIONS = {
   method: "GET",
@@ -7,10 +7,7 @@ const API_OPTIONS = {
 };
 
 export const tmdbApi = {
-  getMovies: async ({
-    pageParam = 1,
-    query = "",
-  }: MovieSearchParams): Promise<MoviesResponse> => {
+  getMovies: async ({ pageParam = 1, query = "" }): Promise<MoviesResponse> => {
     let url: string;
 
     if (query.trim()) {
